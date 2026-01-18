@@ -1,0 +1,50 @@
+class Solution:
+    def largestMagicSquare(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+
+        row_pref = [[0]*(n+1) for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                row_pref[i][j+1] = row_pref[i][j] + grid[i][j]
+
+        col_pref = [[0]*(m+1) for _ in range(n)]
+        for j in range(n):
+            for i in range(m):
+                col_pref[j][i+1] = col_pref[j][i] + grid[i][j]
+
+        def row_sum(i, l, r):
+            return row_pref[i][r+1] - row_pref[i][l]
+
+        def col_sum(j, l, r):
+            return col_pref[j][r+1] - col_pref[j][l]
+
+        for k in range(min(m, n), 1, -1):
+            for i in range(m - k + 1):
+                for j in range(n - k + 1):
+                    target = row_sum(i, j, j + k - 1)
+
+                    ok = True
+
+                    for r in range(i, i + k):
+                        if row_sum(r, j, j + k - 1) != target:
+                            ok = False
+                            break
+                    if not ok:
+                        continue
+
+                    for c in range(j, j + k):
+                        if col_sum(c, i, i + k - 1) != target:
+                            ok = False
+                            break
+                    if not ok:
+                        continue
+                    diag1 = sum(grid[i+d][j+d] for d in range(k))
+                    if diag1 != target:
+                        continue
+                    diag2 = sum(grid[i+d][j+k-1-d] for d in range(k))
+                    if diag2 != target:
+                        continue
+
+                    return k
+
+        return 1
