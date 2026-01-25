@@ -111,3 +111,16 @@ class Solution:
             res += 1
 
         return res
+
+//1984. Minimum Difference Between Highest and Lowest of K Scores
+class Solution {
+    public int minimumDifference(int[] nums, int k) {
+        Arrays.sort(nums);
+        int re=Integer.MAX_VALUE;
+        for(int i=0;i+k-1<nums.length;i++){
+            int di=nums[i+k-1]-nums[i];
+            re=Math.min(re,di);
+        }
+        return re;
+    }
+}
