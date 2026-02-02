@@ -124,3 +124,92 @@ class Solution {
         return re;
     }
 }
+
+
+Divide an Array Into Subarrays With Minimum Cost II
+
+
+
+class Solution {
+public:
+    struct SlidingWindow {
+        int limitK;
+        multiset<int> lowSet, highSet;
+        long long lowSum = 0;
+
+        SlidingWindow(int k) : limitK(k) {}
+
+        int size() const {
+            return (int)lowSet.size() + (int)highSet.size();
+        }
+
+        void rebalance() {
+            int required = min(limitK, size());
+
+            while ((int)lowSet.size() > required) {
+                auto it = prev(lowSet.end());
+                int value = *it;
+                lowSet.erase(it);
+                lowSum -= value;
+                highSet.insert(value);
+            }
+            while ((int)lowSet.size() < required && !highSet.empty()) {
+                auto it = highSet.begin();
+                int value = *it;
+                highSet.erase(it);
+                lowSet.insert(value);
+                lowSum += value;
+            }
+        }
+
+        void addValue(int value) {
+            if (lowSet.empty() || value <= *prev(lowSet.end())) {
+                lowSet.insert(value);
+                lowSum += value;
+            } else {
+                highSet.insert(value);
+            }
+            rebalance();
+        }
+
+        void removeValue(int value) {
+            auto itLow = lowSet.find(value);
+            if (itLow != lowSet.end()) {
+                lowSet.erase(itLow);
+                lowSum -= value;
+            } else {
+                auto itHigh = highSet.find(value);
+                if (itHigh != highSet.end()) {
+                    highSet.erase(itHigh);
+                }
+            }
+            rebalance();
+        }
+
+        long long getSum() const {
+            return lowSum;
+        }
+    };
+
+    long long minimumCost(vector<int>& nums, int k, int dist) {
+        int n = nums.size();
+        k -= 1;
+
+        SlidingWindow window(k);
+
+        for (int i = 1; i <= 1 + dist; i++) {
+            window.addValue(nums[i]);
+        }
+
+        long long answer = window.getSum();
+
+        for (int i = 2; i + dist < n; i++) {
+            window.removeValue(nums[i - 1]);
+            window.addValue(nums[i + dist]);
+            answer = min(answer, window.getSum());
+        }
+
+        return answer + nums[0];
+    }
+};
+
