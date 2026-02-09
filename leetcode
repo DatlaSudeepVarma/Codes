@@ -227,3 +227,31 @@ class Solution:
                 deletion += 1
         return deletion
 
+
+
+////////////////////////////1382. Balance a Binary Search Tree
+
+
+
+class Solution:
+    def inorderTraversal(self, root, nodes):
+        if not root:
+            return
+        self.inorderTraversal(root.left, nodes)
+        nodes.append(root.val)
+        self.inorderTraversal(root.right, nodes)
+
+    def buildBalancedTree(self, arr, start, end):
+        if start > end:
+            return None
+        mid = (start + end) // 2
+        newNode = TreeNode(arr[mid])
+        newNode.left = self.buildBalancedTree(arr, start, mid - 1)
+        newNode.right = self.buildBalancedTree(arr, mid + 1, end)
+        return newNode
+
+    def balanceBST(self, root):
+        sorted_nodes = []
+        self.inorderTraversal(root, sorted_nodes)
+        return self.buildBalancedTree(sorted_nodes, 0, len(sorted_nodes) - 1)
+
